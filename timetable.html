@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Year 9 (02) Timetable</title>
+<style>
+:root{
+  --bg:#f4f1ff; --bg2:#e6f0ff; --card:#ffffffcc; --card-solid:#fff; --text:#1d1b2e; --muted:#6b6785;
+  --line:#e2defa; --accent:#7c5cff; --accent2:#22b8f0; --shadow:0 10px 30px rgba(94,70,200,.15);
+  --break:#ece6ff; --glow:rgba(124,92,255,.35);
+}
+[data-theme="dark"]{
+  --bg:#0c0a1a; --bg2:#14103a; --card:#171433cc; --card-solid:#1a1638; --text:#f1eeff; --muted:#9a95c4;
+  --line:#2c2760; --accent:#9d85ff; --accent2:#3ccfff; --shadow:0 10px 40px rgba(0,0,0,.5);
+  --break:#1f1a4a; --glow:rgba(157,133,255,.45);
+}
+*{box-sizing:border-box;margin:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--text);min-height:100vh;
+  background:radial-gradient(900px 500px at 10% -10%,var(--glow),transparent 60%),
+             radial-gradient(800px 500px at 100% 0%,rgba(34,184,240,.22),transparent 60%),
+             linear-gradient(160deg,var(--bg),var(--bg2));
+  background-attachment:fixed;padding:28px 18px 50px;transition:background .4s,color .4s;
+}
+.wrap{max-width:1250px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+h1{font-size:clamp(28px,4.5vw,46px);font-weight:800;letter-spacing:-1px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.right{display:flex;align-items:center;gap:12px}
+.clock{padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;backdrop-filter:blur(8px)}
+.toggle{width:64px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;position:relative;padding:0;backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+.toggle::after{content:"☀️";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:14px;transition:transform .35s}
+[data-theme="dark"] .toggle::after{content:"🌙";transform:translateX(30px)}
+
+.grid{display:grid;grid-template-columns:120px repeat(5,1fr);gap:10px}
+.dayh{padding:14px;text-align:center;font-weight:700;font-size:18px;border-radius:16px;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:var(--shadow);position:relative}
+.dayh.today::after{content:"TODAY";position:absolute;top:-8px;right:10px;font-size:10px;letter-spacing:1px;background:#ffcf33;color:#3a2c00;padding:2px 8px;border-radius:999px;font-weight:800}
+.time{border-radius:16px;padding:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px)}
+.time b{font-size:14px}.time span{font-size:12px;color:var(--muted);margin-top:3px}
+.cell{border-radius:16px;padding:12px 10px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;
+  background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c,var(--line));backdrop-filter:blur(8px);
+  transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.cell::before{content:"";position:absolute;inset:0;background:var(--c);opacity:.09;pointer-events:none}
+.cell:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 28px color-mix(in srgb,var(--c) 40%,transparent)}
+.cell .t{font-size:11px;color:var(--muted)}
+.cell .s{font-weight:800;font-size:15px;line-height:1.2}
+.cell .r{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--text)}
+.cell.empty{background:transparent;border:1px dashed var(--line);border-left:1px dashed var(--line)}
+.cell.empty::before{display:none}.cell.empty::after{content:"Free";color:var(--muted);font-size:13px;opacity:.6}
+.cell.now{box-shadow:0 0 0 3px var(--c),0 0 28px var(--c);animation:pulse 2s infinite}
+.cell.now::after{content:"NOW";position:absolute;top:6px;right:8px;font-size:9px;font-weight:800;letter-spacing:1px;background:var(--c);color:#fff;padding:2px 6px;border-radius:999px}
+@keyframes pulse{50%{box-shadow:0 0 0 3px var(--c),0 0 8px var(--c)}}
+.brk{grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:10px;padding:9px;border-radius:14px;font-size:13px;font-weight:600;color:var(--muted);
+  background:repeating-linear-gradient(45deg,var(--break),var(--break) 12px,transparent 12px,transparent 24px);border:1px solid var(--line)}
+.brk.now{color:var(--text);border-color:var(--accent);box-shadow:0 0 18px var(--glow)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:12px;font-weight:600}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+
+.tabs,.list{display:none}
+@media(max-width:860px){
+  .grid{display:none}
+  .tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px}
+  .tabs button{flex:1;padding:11px 0;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--text);font-weight:700;font-size:15px;cursor:pointer}
+  .tabs button.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:var(--shadow)}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .row{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:stretch}
+  .row .cell{min-height:78px;align-items:flex-start;text-align:left;padding-left:16px}
+  .row .time{padding:6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Year 9 (02)</h1><div class="sub">Weekly timetable · 5 days · 7 lessons</div></div>
+    <div class="right"><div class="clock" id="clock"></div><button class="toggle" id="toggle" aria-label="Toggle light/night theme"></button></div>
+  </header>
+  <div class="grid" id="grid"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="list" id="list"></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<script>
+const days=["Mon","Tue","Wed","Thu","Fri"];
+const lessons=[
+ {n:"Lesson 1",t:"8:30 - 9:15",s:[8*60+30,9*60+15]},
+ {n:"Lesson 2",t:"9:20 - 10:05",s:[9*60+20,10*60+5]},
+ {n:"Lesson 3",t:"10:10 - 10:55",s:[10*60+10,10*60+55]},
+ {brk:"☕ Coffee Break · 10:55 - 11:25",s:[10*60+55,11*60+25]},
+ {n:"Lesson 4",t:"11:25 - 12:10",s:[11*60+25,12*60+10]},
+ {n:"Lesson 5",t:"12:15 - 13:00",s:[12*60+15,13*60]},
+ {brk:"🍽️ Lunch Break · 13:00 - 14:00",s:[13*60,14*60]},
+ {n:"Lesson 6",t:"14:00 - 14:45",s:[14*60,14*60+45]},
+ {n:"Lesson 7",t:"14:50 - 15:35",s:[14*60+50,15*60+35]},
+];
+const C={History:"#e8884a",Tarbiya:"#d96bb0",Physics:"#2f9bff",Math:"#7c5cff","English language":"#16b39a",
+ Biology:"#3cb65a",Chemistry:"#e5b400","Ona Tili & Adab":"#ef5f67","Computer Science":"#00a6c8",PE:"#8aa0b8",
+ "Russian language":"#c45cf0","State Law":"#a0714f","Economics Uz Geography":"#3d8f9e","Global Perspective":"#ff7a59"};
+// [subject, teacher, room]
+const D=[
+ [null,["History","Mr Bekjon","206"],["Russian language","Ms Malika","105"],["Physics","Mr Temur X","201"],["Computer Science","Mr Alijon","103"]],
+ [["Tarbiya","Mr Bekjon","207"],["Physics","Mr Temur X","201"],["English language","Ms Yayra / Ms Nalini","108"],["PE","Mr Sirojiddin",""],["Biology","Mr Nariman / Mr Prudence","202"]],
+ [["History","Mr Bekjon","206"],["English language","Ms Yayra / Ms Nalini","108"],["Math","Mr Sonke / Mr Temurbek","102"],["PE","Mr Sirojiddin",""],["Chemistry","Ms Gavhar / Mr Vicash","203"]],
+ null,
+ [["Biology","Mr Nariman / Mr Prudence","202"],["Math","Mr Sonke / Mr Temurbek","102"],["History","Mr Bekjon","206"],["Math","Mr Sonke / Mr Temurbek","102"],["Math","Mr Sonke / Mr Temurbek","102"]],
+ [["Chemistry","Ms Gavhar / Mr Vicash","203"],["Ona Tili & Adab","Ms Sabohat","109"],["Ona Tili & Adab","Ms Sabohat","109"],["Chemistry","Ms Gavhar / Mr Vicash","203"],["Physics","Mr Temur X","201"]],
+ null,
+ [["State Law","Mr Maqsud","110"],["Biology","Mr Nariman / Mr Prudence","202"],["Economics Uz Geography","Ms Gulmira","110"],["Russian language","Ms Malika","105"],["Ona Tili & Adab","Ms Sabohat","109"]],
+ [["Computer Science","Mr Alijon","103"],null,["Global Perspective","Ms Kamola / Ms Yayra","106"],["Computer Science","Mr Alijon","103"],["English language","Ms Yayra / Ms Nalini","108"]],
+];
+const now=new Date(), mins=now.getHours()*60+now.getMinutes(), dow=now.getDay()-1; // 0=Mon
+const isNow=(l,d)=>d===dow&&mins>=l.s[0]&&mins<l.s[1];
+const cell=(x,now)=>{
+  if(!x)return `<div class="cell empty"></div>`;
+  return `<div class="cell${now?" now":""}" style="--c:${C[x[0]]}"><div class="t">${x[1]}</div><div class="s">${x[0]}</div>${x[2]?`<div class="r">${x[2]}</div>`:""}</div>`;
+};
+const timeBox=l=>`<div class="time"><b>${l.n}</b><span>${l.t}</span></div>`;
+
+// Desktop grid
+let g=`<div></div>`+days.map((d,i)=>`<div class="dayh${i===dow?" today":""}">${d}</div>`).join("");
+lessons.forEach((l,i)=>{
+  if(l.brk){g+=`<div class="brk${days.some((_,d)=>isNow(l,d))?" now":""}">${l.brk}</div>`;return}
+  g+=timeBox(l);
+  days.forEach((_,d)=>g+=cell(D[i][d],isNow(l,d)));
+});
+document.getElementById("grid").innerHTML=g;
+
+// Mobile
+let sel=dow>=0&&dow<5?dow:0;
+function renderMobile(){
+  document.getElementById("tabs").innerHTML=days.map((d,i)=>`<button class="${i===sel?"on":""}" data-i="${i}">${d}</button>`).join("");
+  document.getElementById("list").innerHTML=lessons.map((l,i)=>l.brk?`<div class="brk">${l.brk}</div>`:
+    `<div class="row">${timeBox(l)}${cell(D[i][sel],isNow(l,sel))}</div>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{sel=+b.dataset.i;renderMobile()});
+}
+renderMobile();
+
+// Legend
+document.getElementById("legend").innerHTML=Object.entries(C).map(([k,v])=>`<div class="chip" style="--c:${v}"><i></i>${k}</div>`).join("");
+
+// Clock
+const tick=()=>{document.getElementById("clock").textContent=new Date().toLocaleString([],{weekday:"short",hour:"2-digit",minute:"2-digit"})};
+tick();setInterval(tick,30000);
+
+// Theme
+const root=document.documentElement;
+try{const s=localStorage.getItem("tt-theme");if(s)root.dataset.theme=s;
+ else if(matchMedia("(prefers-color-scheme: light)").matches)root.dataset.theme="light"}catch(e){}
+document.getElementById("toggle").onclick=()=>{
+  const n=root.dataset.theme==="dark"?"light":"dark";root.dataset.theme=n;
+  try{localStorage.setItem("tt-theme",n)}catch(e){}
+};
+</script>
+</body>
+</html>
